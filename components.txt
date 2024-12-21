@@ -1,0 +1,42 @@
+Propeller
+ABS 7x3.5
+GemFan 7x3.5
+APC 6x4E
+APC 6x4EP
+GemFan 6x4.2-2
+GemFan 6x4.2-3
+GemFan 6x3.8-4
+GemFan 6x3.2-3
+GemFan 6x3-3
+GemFan 6x3-3 Floppy Proppy
+Orange 6x4.5
+GemFan 5.5x3.6-3
+GemFan 5.2x3.6-3
+GemFan 5.1-3.66-3
+GemFan 5.1-3.6-3
+Foxeer 5.1x4.5 Toroidal
+
+ESC
+CC Phoenix Edge 75
+Simonk 30A
+iFlight Blitz E80
+Holybro Tekko32 F4 50A
+T-Motor AT20A
+
+Battery
+ABSD 2200mAh
+Bonka 1000mAh 40C
+Turnigy 1000mAh 25C
+Genx Power 1500mAh 40C
+Genx Power 2200mAh 40C
+DOGCOM 3000mAh 80C "SKIBI"
+DOGCOM 3000mAh 80C "DI"
+
+Motor
+EMAX EcoII 2207 (1900KV)
+EMAX EcoII 2004 (2400KV)
+EMAX RSIII 2306 (1800KV)
+Generic A2212/10T (1400KV)
+T-Motor AM40 (1500KV)
+iFlight XING-E 2809 (1250KV)
+
