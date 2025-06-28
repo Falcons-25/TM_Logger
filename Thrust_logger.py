@@ -12,7 +12,7 @@ def connect_arduino(port, baud) -> bool:
         return False
 
 def setup():
-    global ad, zero_load, calibration_factor, is_tared
+    global ad, zero_load, calibration_factor, is_tared, tm_type
     is_tared = False
     with open("config.txt", 'r') as file:
         data = [x.strip() for x in file.readlines()]
@@ -25,6 +25,12 @@ def setup():
     esc = data[4]
     batt = data[5]
     prop = data[6]
+
+    s = input("Static TM? ")
+    if s in 'Yy':
+        tm_type = "Static"
+    else:
+        tm_type = "Dynamic"
 
     print(f"Serial COM : {serial_com}, {serial_baud}")
     s = input("Use last configuration? y/n: ")
@@ -76,7 +82,7 @@ def loop():
     try:
         log_file = f"Thrust_logs/Thrust_log_{time.strftime("%Y%m%d_%H%M%S")}.csv"
         with open("Thrust_logs/list.txt", 'a') as file:
-            print(log_file, file=file)
+            print(f"{tm_type}, {log_file}", file=file)
         with open(log_file, 'a') as file:
             print("Starting data logging.")
             while True:

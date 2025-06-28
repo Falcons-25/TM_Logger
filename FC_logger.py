@@ -40,7 +40,7 @@ def keep_heartbeating():
         print("Heartbeat sent.")
 
 def setup():
-    global end, log_file
+    global end, log_file, tm_type
     end = False
     log_file = f"FC_logs/FC_log_{time.strftime("%Y%m%d_%H%M%S")}.csv"
     heartbeat_thread = Thread(target=keep_heartbeating)
@@ -92,6 +92,11 @@ def setup():
                 batt = items[int(input("Enter battery: "))-1]
         print(f"{motor}\n{esc}\n{batt}\n{prop}")
     print("Configuration confirmed.")
+    s = input("Static TM? ")
+    if s in 'Yy':
+        tm_type = "Static"
+    else:
+        tm_type = "Dynamic"
     with open(log_file, 'a') as file:
         print(f"{time.strftime("%Y-%m-%d %H:%M:%S")},{prop},{motor},{esc},{batt}", file=file)
     print(f"\nMAVLink COM: {mavlink_com}, {mavlink_baud}")
@@ -183,7 +188,7 @@ def loop():
     all = 0b00000000
     try:
         with open("FC_logs/list.txt", 'a') as file:
-            print(log_file, file=file)
+            print(f"{tm_type}, {log_file}", file=file)
         with open(log_file, 'a') as file:
             print("Starting data logging.")
             while True:
