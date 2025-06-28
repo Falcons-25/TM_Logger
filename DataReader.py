@@ -25,7 +25,6 @@ def setup():
     global all_tstamps, fc_data, thr_data, config, start_line, tm_type, file_timestamps, file_throttlestamps, file_tiny_summary, fc_log_file, thr_log_file, is_available, to_continue
     file_timestamps = "I:/My Drive/AssailingFalcons/Test Results/TM_Timestamps.xlsx"
     file_throttlestamps = "I:/My Drive/AssailingFalcons/Test Results/TM_Throttles.xlsx"
-    file_speeds = "I:/My Drive/AssailingFalcons/Test Results/TM_Speeds.xlsx"
     file_tiny_summary = "I:/My Drive/AssailingFalcons/Test Results/New_TM.xlsx"
     all_tstamps = {}
     with open("config.txt", 'r') as file:
@@ -35,16 +34,27 @@ def setup():
         thr_log_file = conf[8]
     with open("FC_logs/list.txt", 'r') as file:
         try:
-            fc_log_file = file.readlines()[int(fc_log_file)-1].strip()
+            fc_log = file.readlines()[int(fc_log_file)-1].strip()
+            fc_log_type = fc_log.split(',')[0]
+            fc_log_file = fc_log.split(',')[1]
         except Exception:
             print("No FC Logs remaining.")
             is_available = False
     with open("Thrust_logs/list.txt", 'r') as file:
         try:
-            thr_log_file = file.readlines()[int(thr_log_file)-1].strip()
+            thr_log = file.readlines()[int(thr_log_file)-1].strip()
+            thr_log_type = thr_log.split(',')[0]
+            thr_log_file = thr_log.split(',')[1]
         except Exception:
             print("No Thrust Logs remaining.")
             is_available = False
+    if fc_log_type != thr_log_type:
+        print("FC and Thrust logs are not of the same type.")
+        print(fc_log)
+        print(thr_log)
+        is_available = False
+    else:
+        tm_type = fc_log_type
     if not is_available:
         return
     print(fc_log_file, thr_log_file, sep='\n')
@@ -61,14 +71,15 @@ def setup():
     config[:] = [test_date, prop, motor_kv, esc, batt]
     fc_data[:] = fc_data[1:]
     print(f"{motor_kv}\n{esc}\n{batt}\n{prop}")
-    try:
-        tm_type = input("Static or Dynamic? ").strip()
-        if tm_type in 'nN':
-            print("Cancelled.")
-            sys.exit(0)
-    except KeyboardInterrupt:
-        print("Cancelled.")
-        sys.exit(0)
+    print(f"Test: {test_date}, {tm_type} TM")
+    s = input("Continue? y/n: ")
+    if s in 'Yy':
+        print("Proceeding...")
+    else:
+        print("Exiting...")
+        is_available = False
+        to_continue = False
+        return
 
 def combine_files():
     global fc_data, thr_data
@@ -196,7 +207,7 @@ def summarise_data():
                 # final_thr.append([all_tstamps[timestamp]["Throttle"][i], average(thrust_tstamps[timestamp][(i+m)//n:((i+m)//n)+1])])
                 final_thr.append([
                     all_tstamps[timestamp]["Throttle"][i],
-                    int(average(thrust_tstamps[timestamp][(i*m)//n:((i+1)*m)//n])),
+                    int(average(thrust_tstamps[timestamp][(i*m)//n : ((i+1)*m)//n])),
                     all_tstamps[timestamp]["Current"][i],
                     all_tstamps[timestamp]["Current2"][i],
                     all_tstamps[timestamp]["Volt"][i],
@@ -299,9 +310,8 @@ def write_to_files():
     else:
         ws1 = wb1.create_sheet(name)
     wb1.active = ws1
-    start_row = ws1.max_row + 3
-    if start_row==4:
-        start_row = 2
+    start_row = ws1.max_row + 3 if ws1.max_row>1 else 2
+    
     ws1.cell(row=start_row+0, column=2).value = f"{config[2]}"
     ws1.merge_cells(start_column=2, start_row=start_row, end_column=12, end_row=start_row)
     ws1.cell(row=start_row+1, column=2).value = f"({tm_type}) {config[0]}"
@@ -350,7 +360,6 @@ def write_to_files():
     wb1.save(file_timestamps)
     wb1.close()
     print("Timestamped data saved to file.")
-
 
     # if stm
     wb2 = load_workbook(file_throttlestamps)
